@@ -603,7 +603,7 @@ print_msg "All partitions mounted"
 print_step "Installing base system (this may take a while)..."
 
 # Base packages
-PACKAGES="base base-devel linux linux-firmware networkmanager grub sudo nano vim btop terminator tmux"
+PACKAGES="base base-devel linux linux-firmware networkmanager grub sudo nano vim btop terminator tmux kitty"
 PACKAGES="$PACKAGES reflector"
 
 # Add btrfs-progs if using btrfs
