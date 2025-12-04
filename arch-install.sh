@@ -595,7 +595,7 @@ if [[ "$DESKTOP_ENV" != "none" ]]; then
     
     # Install audio
     print_step "Installing PipeWire audio stack..."
-    AUDIO_PACKAGES="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber"
+    AUDIO_PACKAGES="pipewire pipewire-alsa pipewire-pulse wireplumber"
     AUDIO_PACKAGES="$AUDIO_PACKAGES pavucontrol alsa-utils"
     pacstrap /mnt $AUDIO_PACKAGES
     print_msg "PipeWire audio installed"
