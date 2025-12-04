@@ -652,9 +652,13 @@ if [[ "$DESKTOP_ENV" != "none" ]]; then
             DESKTOP_PACKAGES="$DESKTOP_PACKAGES sddm"
             DISPLAY_MANAGER="sddm"
             ;;
-        sway|i3|hyprland)
+        sway|i3)
             # No display manager for tiling WMs by default
             DISPLAY_MANAGER=""
+            ;;
+        hyprland)
+            DESKTOP_PACKAGES="$DESKTOP_PACKAGES sddm"
+            DISPLAY_MANAGER="sddm"
             ;;
         *)
             DESKTOP_PACKAGES="$DESKTOP_PACKAGES lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings"
@@ -996,12 +1000,11 @@ elif [[ "$DESKTOP_ENV" == "sway" ]]; then
     echo -e "  Login and run: ${CYAN}sway${NC}"
     echo ""
 elif [[ "$DESKTOP_ENV" == "hyprland" ]]; then
-    echo -e "${BOLD}To start Hyprland:${NC}"
-    echo -e "  Login and run: ${CYAN}Hyprland${NC}"
     if [[ "$HAS_NVIDIA" == "yes" ]]; then
+        echo -e "${BOLD}Hyprland with NVIDIA:${NC}"
         echo -e "  ${YELLOW}NVIDIA configured with modeset=1${NC}"
+        echo ""
     fi
-    echo ""
 fi
 prompt "Press Enter to reboot (or Ctrl+C to stay)..."
 read
