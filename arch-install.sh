@@ -341,7 +341,8 @@ WINDOWS_EFI_PART=""
 print_info "Checking for existing Windows installation..."
 
 # Get list of partitions on the selected disk
-PARTITIONS=$(lsblk -ln -o NAME,TYPE "$DISK" | grep "part" | awk '{print "/dev/"$1}')
+# Use -p for full path and -n to skip header, filter for partitions only
+PARTITIONS=$(lsblk -pln -o NAME,TYPE "$DISK" 2>/dev/null | awk '$2=="part" {print $1}')
 
 # Look for Windows EFI boot manager or NTFS partitions with Windows
 if [[ "$BOOT_MODE" == "UEFI" ]]; then
@@ -598,14 +599,13 @@ if [[ "$DUAL_BOOT" == "yes" ]]; then
     print_msg "Using existing EFI partition: ${EFI_PART}"
     
     # Find the next available partition number
-    # Handle both regular (sda1) and nvme (nvme0n1p1) naming
-    DISK_BASENAME="${DISK##*/}"
+    # Use lsblk with -p for full paths, then extract partition numbers
     if [[ "$DISK" == *"nvme"* ]] || [[ "$DISK" == *"mmcblk"* ]]; then
-        # For nvme/mmcblk: nvme0n1p1, nvme0n1p2, etc.
-        LAST_PART_NUM=$(lsblk -ln -o NAME "$DISK" | grep -oP "${DISK_BASENAME}p\K[0-9]+" | sort -n | tail -1)
+        # For nvme/mmcblk: /dev/nvme0n1p1, /dev/nvme0n1p2, etc.
+        LAST_PART_NUM=$(lsblk -pln -o NAME "$DISK" 2>/dev/null | grep -oP "${DISK}p\K[0-9]+" | sort -n | tail -1)
     else
-        # For regular disks: sda1, sda2, vda1, etc.
-        LAST_PART_NUM=$(lsblk -ln -o NAME "$DISK" | grep -oP "${DISK_BASENAME}\K[0-9]+" | sort -n | tail -1)
+        # For regular disks: /dev/sda1, /dev/sda2, /dev/vda1, etc.
+        LAST_PART_NUM=$(lsblk -pln -o NAME "$DISK" 2>/dev/null | grep -oP "${DISK}\K[0-9]+" | sort -n | tail -1)
     fi
     LAST_PART_NUM=${LAST_PART_NUM:-0}
     NEXT_PART_NUM=$((LAST_PART_NUM + 1))
