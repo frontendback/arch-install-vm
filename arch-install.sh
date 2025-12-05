@@ -3,6 +3,8 @@
 # Mathisen's Arch Install Script
 # https://github.com/mathisen99/arch-install-vm
 #
+# Ideas & contributions: frontendback (https://github.com/frontendback)
+#
 # Run with: bash <(curl -sL https://raw.githubusercontent.com/mathisen99/arch-install-vm/main/arch-install.sh)
 #
 
@@ -99,6 +101,7 @@ EOF
 echo -e "${NC}"
 echo ""
 echo -e "${BOLD}Welcome to Mathisen's Arch Linux Install Script${NC}"
+echo -e "${CYAN}Ideas & contributions by frontendback${NC}"
 echo ""
 echo -e "${RED}╔════════════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${RED}║${NC}  ${BOLD}⚠️  WARNING - PLEASE READ CAREFULLY${NC}                                 ${RED}║${NC}"

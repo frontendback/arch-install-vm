@@ -343,7 +343,8 @@ Mount options: `noatime,compress=zstd,space_cache=v2,discard=async`
 
 **Made with ☕ by [Mathisen](https://github.com/mathisen99)**
 
+*Ideas & contributions by [frontendback](https://github.com/frontendback)*
+
 *If this helped you, consider giving it a ⭐*
 
 </div>
-]]>
