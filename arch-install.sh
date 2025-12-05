@@ -645,7 +645,8 @@ if [[ "$DUAL_BOOT" == "yes" ]]; then
     print_msg "Found ${FREE_SPACE_SIZE}MiB of free space"
     
     # Create the root partition in the free space
-    parted -s "$DISK" mkpart primary ${FS_TYPE} ${FREE_SPACE_START}MiB ${FREE_SPACE_END}MiB
+    # Use 100% for end to avoid boundary issues (parted is picky about exact end values)
+    parted -s "$DISK" mkpart primary ${FS_TYPE} ${FREE_SPACE_START}MiB 100%
     
     ROOT_PART="${PART_PREFIX}${NEXT_PART_NUM}"
     
