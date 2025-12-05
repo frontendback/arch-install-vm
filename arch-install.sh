@@ -98,23 +98,37 @@ __________         .____    .__                               .__            __ 
 EOF
 echo -e "${NC}"
 echo ""
-echo -e "${BOLD}Welcome to Mathisen's Arch Linux Install Script for VMs${NC}"
+echo -e "${BOLD}Welcome to Mathisen's Arch Linux Install Script${NC}"
+echo ""
+echo -e "${RED}╔════════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${RED}║${NC}  ${BOLD}⚠️  WARNING - PLEASE READ CAREFULLY${NC}                                 ${RED}║${NC}"
+echo -e "${RED}╠════════════════════════════════════════════════════════════════════╣${NC}"
+echo -e "${RED}║${NC}  This script was primarily designed for virtual machines where     ${RED}║${NC}"
+echo -e "${RED}║${NC}  data loss is not a concern. While it works on bare metal, results ${RED}║${NC}"
+echo -e "${RED}║${NC}  may vary depending on your hardware and configuration.           ${RED}║${NC}"
+echo -e "${RED}║${NC}                                                                   ${RED}║${NC}"
+echo -e "${RED}║${NC}  ${YELLOW}BEFORE PROCEEDING:${NC}                                              ${RED}║${NC}"
+echo -e "${RED}║${NC}    • ${BOLD}BACKUP ALL IMPORTANT DATA${NC}                                    ${RED}║${NC}"
+echo -e "${RED}║${NC}    • The author is NOT responsible for any data loss              ${RED}║${NC}"
+echo -e "${RED}║${NC}    • Use at your own risk on production systems                   ${RED}║${NC}"
+echo -e "${RED}╚════════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "This script will guide you through installing Arch Linux with:"
 echo -e "  ${GREEN}•${NC} Automatic partitioning (ext4 or btrfs with subvolumes)"
 echo -e "  ${GREEN}•${NC} Optional LUKS disk encryption"
+echo -e "  ${GREEN}•${NC} Windows detection for dual-boot installation"
 echo -e "  ${GREEN}•${NC} Choice of desktop environments (XFCE, GNOME, KDE, Hyprland, etc.)"
 echo -e "  ${GREEN}•${NC} PipeWire audio, NetworkManager, and more"
 echo -e "  ${GREEN}•${NC} zswap and tmpfs for better performance"
 echo -e "  ${GREEN}•${NC} Optional Zsh with Oh-My-Zsh"
 echo ""
-echo -e "${YELLOW}WARNING: This will ERASE the selected disk!${NC}"
+echo -e "${YELLOW}WARNING: Clean install will ERASE the selected disk!${NC}"
 echo ""
 prompt "Press Enter to continue..."
 read
 
 clear
-print_header "Mathisen's Arch Install Script for VMs"
+print_header "Mathisen's Arch Install Script"
 
 # Detect boot mode
 if [[ -d /sys/firmware/efi/efivars ]]; then
