@@ -340,23 +340,26 @@ WINDOWS_EFI_PART=""
 # Check for Windows installation on selected disk
 print_info "Checking for existing Windows installation..."
 
+# Get list of partitions on the selected disk
+PARTITIONS=$(lsblk -ln -o NAME,TYPE "$DISK" | grep "part" | awk '{print "/dev/"$1}')
+
 # Look for Windows EFI boot manager or NTFS partitions with Windows
 if [[ "$BOOT_MODE" == "UEFI" ]]; then
     # Check for EFI System Partition with Windows Boot Manager
-    for part in ${DISK}*[0-9]; do
+    for part in $PARTITIONS; do
         if [[ -b "$part" ]]; then
             PART_TYPE=$(blkid -s TYPE -o value "$part" 2>/dev/null)
             if [[ "$PART_TYPE" == "vfat" ]]; then
                 # Mount and check for Windows boot files
                 mkdir -p /tmp/efi_check
                 if mount -o ro "$part" /tmp/efi_check 2>/dev/null; then
-                    if [[ -d "/tmp/efi_check/EFI/Microsoft/Boot" ]]; then
+                    if [[ -d "/tmp/efi_check/EFI/Microsoft" ]] || [[ -d "/tmp/efi_check/EFI/Microsoft/Boot" ]]; then
                         WINDOWS_EFI_PART="$part"
                         print_msg "Windows Boot Manager found on ${BOLD}$part${NC}"
                     fi
-                    umount /tmp/efi_check
+                    umount /tmp/efi_check 2>/dev/null
                 fi
-                rmdir /tmp/efi_check 2>/dev/null
+                rmdir /tmp/efi_check 2>/dev/null || true
             fi
         fi
     done
@@ -364,11 +367,12 @@ fi
 
 # Also check for NTFS partitions (Windows system drive)
 WINDOWS_NTFS_FOUND="no"
-for part in ${DISK}*[0-9]; do
+for part in $PARTITIONS; do
     if [[ -b "$part" ]]; then
         PART_TYPE=$(blkid -s TYPE -o value "$part" 2>/dev/null)
         if [[ "$PART_TYPE" == "ntfs" ]]; then
             WINDOWS_NTFS_FOUND="yes"
+            print_msg "NTFS partition found: ${BOLD}$part${NC}"
             break
         fi
     fi
@@ -594,7 +598,16 @@ if [[ "$DUAL_BOOT" == "yes" ]]; then
     print_msg "Using existing EFI partition: ${EFI_PART}"
     
     # Find the next available partition number
-    LAST_PART_NUM=$(lsblk -n -o NAME "$DISK" | grep -E "^${DISK##*/}[0-9]+" | sed "s/${DISK##*/}//" | sort -n | tail -1)
+    # Handle both regular (sda1) and nvme (nvme0n1p1) naming
+    DISK_BASENAME="${DISK##*/}"
+    if [[ "$DISK" == *"nvme"* ]] || [[ "$DISK" == *"mmcblk"* ]]; then
+        # For nvme/mmcblk: nvme0n1p1, nvme0n1p2, etc.
+        LAST_PART_NUM=$(lsblk -ln -o NAME "$DISK" | grep -oP "${DISK_BASENAME}p\K[0-9]+" | sort -n | tail -1)
+    else
+        # For regular disks: sda1, sda2, vda1, etc.
+        LAST_PART_NUM=$(lsblk -ln -o NAME "$DISK" | grep -oP "${DISK_BASENAME}\K[0-9]+" | sort -n | tail -1)
+    fi
+    LAST_PART_NUM=${LAST_PART_NUM:-0}
     NEXT_PART_NUM=$((LAST_PART_NUM + 1))
     
     # Create root partition in free space
