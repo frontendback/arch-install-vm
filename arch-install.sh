@@ -66,6 +66,10 @@ if [[ ! -f /etc/arch-release ]]; then
 fi
 
 # Check internet connection
+WIFI_CONFIGURED="no"
+WIFI_SSID=""
+WIFI_PASSWORD=""
+
 print_info "Checking internet connection..."
 if ! ping -c 1 -W 5 archlinux.org &>/dev/null; then
     print_warn "No internet connection detected!"
@@ -117,6 +121,8 @@ if ! ping -c 1 -W 5 archlinux.org &>/dev/null; then
             # Verify connection
             if ping -c 1 -W 5 archlinux.org &>/dev/null; then
                 print_msg "WiFi connected successfully!"
+                # Store credentials for later use in installed system
+                WIFI_CONFIGURED="yes"
             else
                 print_error "Failed to connect to WiFi."
                 print_info "Please connect manually using: iwctl"
@@ -1065,6 +1071,33 @@ fi
 # Enable services
 systemctl enable NetworkManager
 systemctl enable reflector.timer
+
+# Configure WiFi if it was used during installation
+if [[ "${WIFI_CONFIGURED}" == "yes" ]]; then
+    # Create NetworkManager connection file for the WiFi network
+    mkdir -p /etc/NetworkManager/system-connections
+    cat > "/etc/NetworkManager/system-connections/${WIFI_SSID}.nmconnection" << WIFICONF
+[connection]
+id=${WIFI_SSID}
+type=wifi
+autoconnect=true
+
+[wifi]
+mode=infrastructure
+ssid=${WIFI_SSID}
+
+[wifi-security]
+key-mgmt=wpa-psk
+psk=${WIFI_PASSWORD}
+
+[ipv4]
+method=auto
+
+[ipv6]
+method=auto
+WIFICONF
+    chmod 600 "/etc/NetworkManager/system-connections/${WIFI_SSID}.nmconnection"
+fi
 
 # Enable display manager if set
 if [[ -n "${DISPLAY_MANAGER}" ]]; then
